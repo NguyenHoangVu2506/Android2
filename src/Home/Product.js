@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Categories from './Categories';
 
 const Product = ({ navigation }) => {
   const [products, setProducts] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   useEffect(() => {
     getAllProduct();
@@ -15,30 +17,24 @@ const Product = ({ navigation }) => {
     axios
       .get('https://dummyjson.com/products')
       .then(function (response) {
-        // handle success
         setProducts(response.data.products);
       })
       .catch(function (error) {
-        // handle error
         console.log(error.message);
       });
   };
 
   const addToCart = async (selectedProducts) => {
     try {
-      // Get the existing cart items from AsyncStorage
       const existingCartItems = await AsyncStorage.getItem('cartItems');
       let cartItems = [];
 
       if (existingCartItems) {
-        // If there are existing cart items, parse the JSON string and add them to the cartItems array
         cartItems = JSON.parse(existingCartItems);
       }
 
-      // Add the selected products to the cartItems array
       cartItems.push(...selectedProducts);
 
-      // Store the updated cart items in AsyncStorage
       await AsyncStorage.setItem('cartItems', JSON.stringify(cartItems));
 
       console.log('Products added to cart:', cartItems);
@@ -57,6 +53,9 @@ const Product = ({ navigation }) => {
   const renderProductItem = ({ item }) => {
     const isSelected = selectedItems.includes(item.id);
 
+    const filteredProducts = selectedCategory
+      ? products.filter((product) => product.category === selectedCategory)
+      : products;
     return (
       <TouchableOpacity
         style={[
@@ -79,7 +78,7 @@ const Product = ({ navigation }) => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Sản phẩm</Text>
       </View>
@@ -91,13 +90,13 @@ const Product = ({ navigation }) => {
           numColumns={2}
         />
       </View>
-    </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     backgroundColor: '#fff',
   },
   header: {

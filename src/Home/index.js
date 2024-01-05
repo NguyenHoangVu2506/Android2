@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import Product from './Product';
 import Categories from './Categories';
@@ -9,6 +9,11 @@ import Search from './Search';
 
 
 const Home = ({ navigation }) => {
+    const [selectedCategory, setSelectedCategory] = useState(null);
+
+  const handleCategoryPress = (category) => {
+    setSelectedCategory(category);
+  };
     return (
         <ScrollView>
             <View style={styles.container}>
@@ -17,8 +22,11 @@ const Home = ({ navigation }) => {
                     <Banner />
                 </View>
                 <View style={styles.categoryContainer}>
-                    <Categories />
-                </View>
+          <Categories
+            selectedCategory={selectedCategory}
+            onCategoryPress={handleCategoryPress}
+          />
+        </View>
                 <View style={styles.productContainer}>
                     <Product navigation={navigation} />
                     {/* All product components go here */}
@@ -50,3 +58,4 @@ const styles = StyleSheet.create({
 });
 
 export default Home;
+

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 
 const CategoryItem = ({ image, title }) => {
@@ -20,7 +20,10 @@ const Categories = () => {
 
     // Add more categories as needed
   ];
-
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const handleCategoryPress = (category) => {
+    setSelectedCategory(category);
+  };
   return (
     <View style={styles.container}>
       {categories.map((category) => (
@@ -59,3 +62,4 @@ const styles = StyleSheet.create({
 });
 
 export default Categories;
+

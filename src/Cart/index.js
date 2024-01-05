@@ -115,7 +115,7 @@ const Cart = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Giỏ hàng</Text>
       <TouchableOpacity onPress={clearCart} style={styles.clearButton}>
-        <Text style={styles.clearButtonText}>Xóa hết giỏ hàng</Text>
+        <Text style={styles.clearButtonText}>Xóa tất cả</Text>
       </TouchableOpacity>
       <FlatList
         data={cartItems}

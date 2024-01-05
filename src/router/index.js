@@ -19,6 +19,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import Home from '../Home';
 import Cart from '../Cart';
+import setting from '../user/setting';
 
 const Tab = createBottomTabNavigator();
 
@@ -40,6 +41,15 @@ const Router = () => {
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="cart" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Tôi"
+        component={setting}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person" size={size} color={color} />
           ),
         }}
       />
