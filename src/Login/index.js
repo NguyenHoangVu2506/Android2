@@ -1,125 +1,184 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, ImageBackground } from 'react-native';
 
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, ScrollView } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { useNavigation } from '@react-navigation/native';
 
-const Login = ({ navigation }) => {
+const Login = () => {
+    const navigation = useNavigation();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+
+    const handleRegisterNow = () => {
+        navigation.navigate('Register');
+    };
+
+    const handleLoginNow = async () => {
+        const user = {
+            email: email,
+            password: password
+        };
+
+        try {
+            const response = await fetch('http://172.16.8.97/nguyenhoanvu/public/api/user/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(user)
+            });
+
+            const result = await response.json();
+
+            if (result.success === true) {
+                alert(result.message);
+                navigation.navigate('Home', { replace: true });
+            } else {
+                alert(result.message);
+                navigation.navigate('', { replace: true });
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     return (
-        <View style={styles.container}>
-            <ImageBackground
-                source={require('../../assets/images/bg-login.jpg')}
-                style={styles.bg}
-            >
+        <ScrollView contentContainerStyle={styles.container}>
+            <View style={styles.innerContainer}>
+                <Image source={require('../../assets/images/avt-login01.jpg')} style={styles.backgroundImage} />
                 <View style={styles.content}>
-                    <Image
-                        source={require('../../assets/images/avt1.png')}
-                        style={styles.image}
-                    />
-                    <Text style={{ color: 'white' }}> Welcome Back!</Text>
-                    <Text style={{ color: 'white' }}>Please sign in to your account</Text>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="User Name"
-                        keyboardType="input your email-address"
-                    />
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Password"
-                        secureTextEntry
-                    />
-                    <TouchableOpacity
-                        style={styles.button}
-                        onPress={() => navigation.navigate('Home')}
-                    >
+                    <Text style={styles.title}>Login</Text>
+                    <View style={styles.inputContainer}>
+                        <Icon name="envelope" size={20} color="blue" style={styles.inputIcon} />
+                        <TextInput
+                            style={[styles.input, { backgroundColor: 'transparent', color: 'white' }]}
+                            placeholder="Email Address"
+                            placeholderTextColor="#ffffe6"
+                            keyboardType="email-address"
+                            onChangeText={value => setEmail(value)}
+                            value={email}
+                        />
+                    </View>
+                    <View style={styles.inputContainer}>
+                        <Icon name="lock" size={20} color="blue" style={styles.inputIcon} />
+                        <TextInput
+                            style={[styles.input, { backgroundColor: 'transparent', color: 'white' }]}
+                            placeholder="Password"
+                            placeholderTextColor="#ffffe6"
+                            secureTextEntry
+                            onChangeText={value => setPassword(value)}
+                            value={password}
+                        />
+                    </View>
+                    <View style={styles.textContainer}>
+                        <Text style={styles.textaccount}>You don't have an account ?</Text>
+                        <Text style={styles.textRegister} onPress={handleRegisterNow}>Register</Text>
+                    </View>
+                    <TouchableOpacity style={styles.forgotPassword}>
+                        <Text style={styles.textForgot}>Forgot Password?</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.buttonRegister} onPress={handleLoginNow}>
                         <Text style={styles.buttonText}>Login</Text>
                     </TouchableOpacity>
+                    <Text style={styles.errorText}>{errorMessage}</Text>
                 </View>
-            </ImageBackground>
-        </View>
+            </View>
+        </ScrollView>
     );
 };
 
-// ...styles definition...
-
 const styles = StyleSheet.create({
-    bg: {
-        flex: 1,
-        resizeMode: 'cover',
-        justifyContent: 'center',
-    },
-    input: {
-        color: 'gray',
-        backgroundColor: '#ffff',
-        margin: 10,
-        borderRadius: 20,
-        height: 70,
-        width: '70%',
-        borderWidth: 1,
-        marginBottom: 10,
-        paddingLeft: 10,
-    },
     container: {
-        flex: 1,
+        flexGrow: 1,
         backgroundColor: 'white',
-
     },
-    buttonUserName: {
-        justifyContent: 'left',
+    innerContainer: {
+        flex: 1,
+    },
+    backgroundImage: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        resizeMode: 'cover',
+        flex: 1,
+        width: '100%',
+        height: '100%',
     },
     content: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
     },
-    image: {
-        width: 200,
-        height: 200,
-        marginBottom: 16,
-        tintColor: 'white'
+    title: {
+        fontSize: 45,
+        color: '#66CCFF',
+        marginBottom: 20,
+        marginTop: 70,
+        alignSelf: 'center',
+        textAlign: 'center',
+        textAlignVertical: 'center',
     },
-    text: {
-        fontSize: 18,
-        marginBottom: 16,
-    },
-    button: {
-        backgroundColor: 'red',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 10,
-        width: '70%',
-        marginTop: 30,
+    inputContainer: {
+        flexDirection: 'row',
         alignItems: 'center',
+        marginVertical: 10,
+        borderRadius: 20,
+        width: '85%',
+        paddingLeft: 10,
+        borderBottomWidth: 3,
+        borderBottomColor: '#66CCFF',
     },
-    buttonSignInGoole: {
-        backgroundColor: 'white',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 10,
-        width: '70%',
-        marginTop: 30,
-        alignItems: 'center',
+    inputIcon: {
+        marginRight: 10,
     },
-    buttonSignInFaceBook: {
-        backgroundColor: '#007bff',
+    input: {
+        color: 'white',
+        backgroundColor: '#ffff',
+        height: 70,
+        flex: 1,
+    },
+    forgotPassword: {
+        alignSelf: 'flex-end',
+        marginTop: 10,
+    },
+    textForgot: {
+        color: '#66CCFF',
+        fontSize: 14,
+        textDecorationLine: 'underline',
+    },
+    buttonRegister: {
+        backgroundColor: '#66CCFF',
+        borderRadius: 20,
         paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 10,
-        width: '70%',
+        paddingHorizontal: 30,
         marginTop: 30,
-        alignItems: 'center',
     },
     buttonText: {
-        color: '#DDDDDD',
-        fontSize: 16,
+        color: 'white',
+        fontSize: 18,
         fontWeight: 'bold',
     },
-    footer: {
-        padding: 16,
-        backgroundColor: '#f9f9f9',
-        alignItems: 'center',
+    textContainer: {
+        flexDirection: 'row',
+        marginTop: 10,
+        marginBottom: 30,
     },
-    footerText: {
+    textaccount: {
+        color: 'white',
         fontSize: 12,
-        color: '#888',
+        marginRight: 5,
+    },
+    textRegister: {
+        color: '#66CCFF',
+        fontSize: 12,
+        textDecorationLine: 'underline',
+    },
+    errorText: {
+        color: 'red',
+        marginTop: 10,
     },
 });
 

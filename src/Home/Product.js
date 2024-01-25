@@ -4,26 +4,40 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Categories from './Categories';
-
+import { urlImage } from '../config';
+import StoreProductsService from '../services/StoreProductsService';
+import accounting from "accounting";
+import StarRating from 'react-native-star-rating';
 const Product = ({ navigation }) => {
-  const [products, setProducts] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [AllProducts, setAllProducts] = useState([]);
+  const [page, setPage] = useState(1);
+  const [product_qty, setProduct_qty] = useState([]);
+
+  const [end_page, setEndPage] = useState(1);
+  const PageChange = (event, value) => {
+    setPage(value);
+  };
+  const [viewMode, setViewMode] = useState("grid");
 
   useEffect(() => {
-    getAllProduct();
-  }, []);
+    const fetchData = async () => {
+      try {
+        const products_data = await StoreProductsService.getNewProductAll(8, page);
+        if (products_data.data.success === true) {
+          setAllProducts(products_data.data.new_products_all);
+          setEndPage(products_data.data.end_page);
+          setProduct_qty(products_data.data.product_qty);
 
-  const getAllProduct = () => {
-    axios
-      .get('https://dummyjson.com/products')
-      .then(function (response) {
-        setProducts(response.data.products);
-      })
-      .catch(function (error) {
-        console.log(error.message);
-      });
-  };
+        } else {
+          // Xử lý lỗi nếu cần thiết
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
+    fetchData();
+  }, [page]);
   const addToCart = async (selectedProducts) => {
     try {
       const existingCartItems = await AsyncStorage.getItem('cartItems');
@@ -47,26 +61,41 @@ const Product = ({ navigation }) => {
 
   const addToCartAndToggleSelection = (item) => {
     addToCart([item]);
-    setSelectedItems((prevSelectedItems) => [...prevSelectedItems, item.id]);
+    setSelectedItems((prevSelectedItems) => [...prevSelectedItems, item.product_id]);
   };
 
   const renderProductItem = ({ item }) => {
-    const isSelected = selectedItems.includes(item.id);
-
-    const filteredProducts = selectedCategory
-      ? products.filter((product) => product.category === selectedCategory)
-      : products;
+    const isSelected = selectedItems.includes(item.product_id);
+    // const filteredProducts = selectedCategory
+    //   ? AllProducts.filter((new_products_all) => new_products_all.category_name === selectedCategory)
+    //   : AllProducts;
     return (
       <TouchableOpacity
         style={[
           styles.productItem,
           { backgroundColor: isSelected ? '#e0e0e0' : '#f2f2f2' },
         ]}
-        onPress={() => navigation.navigate('Detail', { product: item })}
+        onPress={() => navigation.navigate('Detail', { new_products_all: item })}
       >
-        <Image source={{ uri: item.images[0] }} style={styles.productImage} />
-        <Text style={styles.productName}>{item.title}</Text>
-        <Text style={styles.productPrice}>{item.price}</Text>
+        {/* <Image src='http://192.168.1.9/nguyenhoanvu/public/images/product/product18.jpg' /> */}
+        <Image
+          source={{
+            uri: urlImage + 'product/' + item.product_image,
+            cache: 'only-if-cached',
+          }}
+          style={{ width: 150, height: 150 }}
+        />
+
+        <Text style={styles.productName}>{item.product_name}</Text>
+        <Text style={styles.productPrice}>{accounting.formatNumber(item.import_price, 0, ".", ",")} đ</Text>
+        <StarRating
+          disabled={true}
+          maxStars={5}
+          rating={item.rating_score || 0}
+          starSize={20}
+          fullStarColor="gold"
+          containerStyle={{ paddingVertical: 10 }}
+        />
         <TouchableOpacity
           style={styles.cartButton}
           onPress={() => addToCartAndToggleSelection(item)}
@@ -84,9 +113,9 @@ const Product = ({ navigation }) => {
       </View>
       <View style={styles.productList}>
         <FlatList
-          data={products}
+          data={AllProducts}
           renderItem={renderProductItem}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item.product_id}
           numColumns={2}
         />
       </View>

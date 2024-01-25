@@ -3,9 +3,12 @@ import { TouchableOpacity } from 'react-native';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { urlImage } from '../config';
+import accounting from "accounting";
+import StarRating from 'react-native-star-rating';
 
 const Detail = ({ route }) => {
-  const { product } = route.params;
+  const { new_products_all } = route.params;
 
   const addToCart = async () => {
     try {
@@ -14,29 +17,37 @@ const Detail = ({ route }) => {
       let cartItems = [];
 
       if (existingCartItems) {
-        // If there are existing cart items, parse the JSON string and add them to the cartItems array
         cartItems = JSON.parse(existingCartItems);
       }
-
-      // Add the current product to the cartItems array
-      cartItems.push(product);
-
-      // Store the updated cart items in AsyncStorage
+      cartItems.push(new_products_all);
       await AsyncStorage.setItem('cartItems', JSON.stringify(cartItems));
-
-      console.log('Product added to cart:', product);
+      console.log('Product added to cart:', new_products_all);
     } catch (error) {
       console.log('Error adding product to cart:', error);
     }
-  };  
+  };
   return (
     <View style={styles.container}>
-      <Image source={{ uri: product.images[0] }} style={styles.productImage} />
-      <Text style={styles.productName}>{product.title}</Text>
-      <Text style={styles.productPrice}>{product.price}</Text>
-      <Text style={styles.productDescription}>Chi tiết: {product.description}</Text>
+      <Image
+        source={{
+          uri: urlImage + 'product/' + new_products_all.product_image,
+          cache: 'only-if-cached',
+        }}
+        style={{ width: 150, height: 150 }}
+      />
+      <Text style={styles.productName}>{new_products_all?.product_name}</Text>
+      <Text style={styles.productPrice}>{accounting.formatNumber(new_products_all?.import_price, 0, ".", ",")} đ</Text>
+      <StarRating
+        disabled={true}
+        maxStars={5}
+        rating={new_products_all.rating_score || 0}
+        starSize={20}
+        fullStarColor="gold"
+        containerStyle={{ paddingVertical: 10 }}
+      />
+      <Text style={styles.productDescription}>Chi tiết: {new_products_all?.product_detail}</Text>
       <TouchableOpacity style={styles.cartButton} onPress={addToCart}>
-        <Icon name="shopping-cart" size={24} color="white"/>
+        <Icon name="shopping-cart" size={24} color="white" />
       </TouchableOpacity>
     </View>
   );

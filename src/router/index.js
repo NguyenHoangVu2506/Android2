@@ -1,60 +1,66 @@
-// import React from 'react';
-// import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-// import Home from '../../components/home';
-// import ShoppingCart from '../../components/ShoppingCart';
-// const Tab = createBottomTabNavigator();
-
-// function Router() {
-//   return (
-//     <Tab.Navigator>
-//       <Tab.Screen name="Trang chủ" component={Home} />
-//       <Tab.Screen name="Giỏ hàng" component={ShoppingCart} />
-//     </Tab.Navigator>
-//   );
-// }
-
-// export default Router;
 import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
-import Home from '../Home';
-import Cart from '../Cart';
-import setting from '../user/setting';
-
-const Tab = createBottomTabNavigator();
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { useNavigation } from '@react-navigation/native';
 
 const Router = () => {
+  const navigation = useNavigation();
+
   return (
-    <Tab.Navigator>
-      <Tab.Screen
-        name="Trang chủ"
-        component={Home}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Giỏ hàng"
-        component={Cart}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="cart" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Tôi"
-        component={setting}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
-          ),
-        }}
-      />
-    </Tab.Navigator>
+    <View style={styles.footer}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('Home')}
+      >
+        <Icon name="home" size={20} color="#444" />
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('SearchPro')}
+      >
+        <Icon name="search" size={20} color="#444" />
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('Cart')}
+      >
+        <Icon name="shopping-cart" size={20} color="#444" />
+      </TouchableOpacity>  
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('Settings')}
+      >
+        <Icon name="cog" size={20} color="#444" />
+      </TouchableOpacity>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  footer: {
+    backgroundColor: '#f2f2f2',
+    padding: 10,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  button: {
+    marginHorizontal: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    backgroundColor: '#e0e0e0',
+    elevation: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  buttonText: {
+    fontSize: 18,
+    color: '#444',
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    marginLeft: 10,
+  },
+});
 
 export default Router;

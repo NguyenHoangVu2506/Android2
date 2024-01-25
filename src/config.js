@@ -1,0 +1,1 @@
+export const urlImage="http://172.16.8.97/nguyenhoanvu/public/images/";
